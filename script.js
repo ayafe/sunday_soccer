@@ -51,8 +51,9 @@ function renderPlayersTable(data) {
         playerLink.href = '#';
         playerLink.textContent = row[0];
         playerLink.onclick = (e) => {
-            e.preventDefault();
-            showPlayerDetails(row[0], row, headers); // Call showPlayerDetails with full player data
+            e.preventDefault(); // Prevent default link behavior
+            showPlayerDetails(row[0], row, headers); // Show full player data
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top smoothly
         };
         playerNameCell.appendChild(playerLink);
 
@@ -147,7 +148,7 @@ function showPlayerDetails(playerName, fullRowData, headers) {
         ['Wins', wins],
         ['Draws', draws],
         ['Losses', losses],
-        ['Games Not Played', notPlayed],
+        ['Missing Games', notPlayed],
         ['Total Games Played', totalGamesPlayed],
         ['Total Points', totalPoints],
         ['Winning Percentage', `${winPercentage}%`]
