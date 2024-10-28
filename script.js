@@ -32,15 +32,15 @@ function renderTable(data) {
 
     // Create table rows, adding the games played count in the last column
     const tbody = table.createTBody();
-    data.slice(2,-1).forEach(row => {
+    data.slice(1).forEach(row => {
         const tr = tbody.insertRow();
         row.forEach(cell => {
             const td = tr.insertCell();
             td.textContent = cell;
         });
 
-        // Calculate games played (cells that aren't '*')
-        const gamesPlayed = row.slice(1).filter(score => score !== '*').length;
+        // Calculate games played from Column C up to (but not including) the last column
+        const gamesPlayed = row.slice(2, -1).filter(score => score !== '*').length;
 
         // Add the games played count as the last cell in the row
         const gamesPlayedCell = tr.insertCell();
