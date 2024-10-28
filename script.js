@@ -60,8 +60,8 @@ async function loadTab(tabName) {
         case 'Teams':
             range = 'Teams!A1:Z'; // Adjust to capture all columns in "Teams"
             break;
-        case 'Scores':
-            range = 'Scores!A1:Z'; // Adjust to capture all columns in "Scores"
+        case 'Scorers':
+            range = 'Scorers!A1:Z'; // Adjust to capture all columns in "Scorers"
             break;
         default:
             console.error('Tab not found');
