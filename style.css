@@ -35,3 +35,193 @@ th {
     background-color: #333;
     color: #fff;
 }
+
+
+.modal {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+    margin: auto;
+    margin-top: 10%;
+}
+
+.close-button {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+#player-data {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%; /* Full width of the content area */
+    max-width: 800px; /* Set max width to align with page layout */
+    margin-left: auto;
+    margin-right: auto; /* Center align */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for elevation */
+}
+
+#player-data h2 {
+    font-size: 1.4em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center; /* Center the title */
+    color: #333;
+}
+
+/* Stats Table Styling */
+#player-data .stats-table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}
+
+/* Styling for table rows */
+#player-data .stats-table tr {
+    border-bottom: 1px solid #ddd;
+}
+
+/* Alternating row colors for readability */
+#player-data .stats-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Styling for table cells */
+#player-data .stats-table td {
+    padding: 12px;
+    text-align: left;
+    font-size: 1em;
+}
+
+/* Styling for the first column (stat name) */
+#player-data .stats-table td:first-child {
+    font-weight: bold;
+    color: #333;
+    width: 60%; /* Adjust width of the first column */
+}
+
+/* Styling for the second column (stat value) */
+#player-data .stats-table td:last-child {
+    text-align: right;
+    color: #4CAF50; /* A distinct color for values */
+    font-weight: bold;
+}
+
+/* Hover effect on rows */
+#player-data .stats-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* Full Data Table Styling */
+#player-data table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+/* Styling for all tables to ensure consistency */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1em;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* Header styling */
+.styled-table th {
+    background-color: #333;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+/* Cell styling */
+.styled-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+/* Row styling with alternating colors */
+.styled-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Hover effect for rows */
+.styled-table tr:hover {
+    background-color: #e0e0e0;
+}
+
+
+#player-data table th, #player-data table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#player-data table th {
+    background-color: #333;
+    color: white;
+}
+
+#player-data .close-button {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    font-size: 0.9em;
+    color: #fff;
+    background-color: #d9534f; /* Bootstrap-style red */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#player-data .close-button:hover {
+    background-color: #c9302c;
+}
+/* Styling for the first row in Teams and Scorers tables */
+.styled-table tr:first-child {
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+}
+
+/* Header-specific styling */
+.styled-table th {
+    background-color: #333; /* Keeps headers distinct */
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+/* General cell styling */
+.styled-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
