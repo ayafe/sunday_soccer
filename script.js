@@ -32,7 +32,7 @@ function renderTable(data) {
 
     // Create table rows, adding the games played count in the last column
     const tbody = table.createTBody();
-    data.slice(1).forEach(row => {
+    data.slice(2,-1).forEach(row => {
         const tr = tbody.insertRow();
         row.forEach(cell => {
             const td = tr.insertCell();
