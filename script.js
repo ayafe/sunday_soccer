@@ -124,7 +124,7 @@ function toggleDetails(row, mainRow, headers) {
 
 	
 
-// Function to load and display data for the specified tab
+// Modify loadTab to reverse order for Teams tab
 async function loadTab(tabName) {
     let range = '';
     switch (tabName) {
@@ -136,18 +136,19 @@ async function loadTab(tabName) {
         case 'Teams':
             range = 'Teams!A1:Z';
             const teamsData = await fetchData(range);
-            renderTable(teamsData); // Assume a generic renderTable function exists
+            if (teamsData) renderTeamsTable(teamsData); // Use a specific function to handle Teams tab
             break;
         case 'Scorers':
             range = 'Scorers!A1:Z';
             const scoresData = await fetchData(range);
-            renderTable(scoresData); // Assume a generic renderTable function exists
+            if (scoresData) renderTable(scoresData); // Assume generic renderTable function works for Scorers
             break;
         default:
             console.error('Tab not found');
             return;
     }
 }
+
 
 // Function to show all data for a player directly on the page with detailed stats and a close button
 function showPlayerDetails(playerName, fullRowData, headers) {
@@ -273,6 +274,76 @@ function renderTable(data) {
     // Append the table to the container
     tableContainer.appendChild(table);
 }
+
+function renderTeamsTable(data) {
+    const tableContainer = document.getElementById('table-container');
+    tableContainer.innerHTML = ''; // Clear previous content
+
+    if (!data || data.length === 0) {
+        tableContainer.innerHTML = '<p>No data available.</p>';
+        return;
+    }
+
+    const dateSections = [];
+    let currentSection = null;
+
+    data.forEach(row => {
+        // Check if the row starts with a date, indicating a new section
+        const datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+        if (row[0] && datePattern.test(row[0])) {
+            // Start a new section for each date row
+            if (currentSection) dateSections.push(currentSection);
+            currentSection = { date: row[0], score: '', teams: [] };
+        } else if (row[0] && row[1] === '-' && currentSection) {
+            // Capture the score row
+            currentSection.score = `${row[0]} - ${row[2]}`;
+        } else if (currentSection) {
+            // Add team data to the current section
+            currentSection.teams.push(row);
+        }
+    });
+
+    // Push the last section if it exists
+    if (currentSection) dateSections.push(currentSection);
+
+    // Reverse sections to display latest date first
+    dateSections.reverse();
+
+    // Render the sections in the DOM
+    dateSections.forEach(section => {
+        // Create a table for each section
+        const sectionTable = document.createElement('table');
+        sectionTable.classList.add('styled-table'); // Add a class for consistent styling
+
+        // Add date as the header row
+        const dateRow = sectionTable.insertRow();
+        const dateCell = dateRow.insertCell();
+        dateCell.colSpan = 2; // Span across two columns for the date
+        dateCell.textContent = section.date;
+        dateCell.classList.add('date-header'); // Add a class for styling the date header
+
+        // Add score row
+        const scoreRow = sectionTable.insertRow();
+        const scoreCell = scoreRow.insertCell();
+        scoreCell.colSpan = 2;
+        scoreCell.textContent = `Score: ${section.score}`;
+        scoreCell.classList.add('score-row'); // Add a class for styling the score row
+
+        // Add team data rows
+        section.teams.forEach(teamRow => {
+            const teamDataRow = sectionTable.insertRow();
+            teamRow.forEach(cellData => {
+                const cell = teamDataRow.insertCell();
+                cell.textContent = cellData;
+            });
+        });
+
+        // Append the section table to the container
+        tableContainer.appendChild(sectionTable);
+    });
+}
+
+
 
 // Load initial tab data when the page is first loaded
 loadTab('Players');
