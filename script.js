@@ -14,7 +14,9 @@ async function fetchData(range) {
 }
 
 
-// Function to render the main players table with only the last 5 dates, Total Points, and Games Played columns
+let openDetailsRow = null; // Variable to track the currently open details row
+
+// Function to render players table with expandable rows for mobile view
 function renderPlayersTable(data) {
     const tableContainer = document.getElementById('table-container');
     tableContainer.innerHTML = ''; // Clear previous content
@@ -23,15 +25,13 @@ function renderPlayersTable(data) {
     const headers = data[0];
     const rows = data.slice(1);
 
-    // Prepare headers for "Player Name", last 5 dates, "Total Points", and "Games Played"
-    const displayedHeaders = [
-        headers[0],                    // Player Name
-        ...headers.slice(-5),           // Last 5 date columns
-        'Total Points', 'Games Played'  // New calculated columns
-    ];
-
-    // Create table and add headers
+    // Display only essential columns on mobile: Player Name, Games Played, and Total Points
+    const displayedHeaders = ['Player Name', 'Games Played', 'Total Points'];
+    
+    // Create the table
     const table = document.createElement('table');
+    table.classList.add('styled-table');
+
     const thead = table.createTHead();
     const headerRow = thead.insertRow();
     displayedHeaders.forEach(header => {
@@ -40,47 +40,82 @@ function renderPlayersTable(data) {
         headerRow.appendChild(th);
     });
 
-    // Calculate and display data for each player
+    // Populate rows with expandable content
     const tbody = table.createTBody();
     rows.forEach(row => {
         const tr = tbody.insertRow();
 
-        // Player name cell with a clickable link
+        // Player Name cell with clickable expand/collapse action
         const playerNameCell = tr.insertCell();
         const playerLink = document.createElement('a');
         playerLink.href = '#';
         playerLink.textContent = row[0];
         playerLink.onclick = (e) => {
-            e.preventDefault(); // Prevent default link behavior
-            showPlayerDetails(row[0], row, headers); // Show full player data
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top smoothly
+            e.preventDefault();
+            toggleDetails(row, tr, headers); // Toggle the details row on click
         };
         playerNameCell.appendChild(playerLink);
 
-        // Display only the last 5 date columns
-        const last5Scores = row.slice(-5); // Last 5 date scores
-        last5Scores.forEach(score => {
-            const td = tr.insertCell();
-            td.textContent = score;
-        });
-
-        // Calculate Total Points and Games Played across all date columns (excluding player name)
-        const dateScores = row.slice(1); // All date columns
-        const totalPoints = dateScores.reduce((sum, score) => {
-            return score !== '*' ? sum + parseInt(score, 10) : sum;
-        }, 0);
+        // Calculate statistics for Games Played, Total Points, Wins, Draws, Losses, Missing Games, etc.
+        const dateScores = row.slice(1);
+        const totalPoints = dateScores.reduce((sum, score) => score !== '*' ? sum + parseInt(score, 10) : sum, 0);
         const gamesPlayed = dateScores.filter(score => score !== '*').length;
+        const wins = dateScores.filter(score => score === '3').length;
+        const draws = dateScores.filter(score => score === '1').length;
+        const losses = dateScores.filter(score => score === '0').length;
+        const missingGames = dateScores.filter(score => score === '*').length;
+        const winPercentage = gamesPlayed > 0 ? ((wins / gamesPlayed) * 100).toFixed(2) : 0;
 
-        // Add Total Points and Games Played columns
+        // Add Games Played and Total Points cells
+        const gamesPlayedCell = tr.insertCell();
+        gamesPlayedCell.textContent = gamesPlayed;
+
         const totalPointsCell = tr.insertCell();
         totalPointsCell.textContent = totalPoints;
 
-        const gamesPlayedCell = tr.insertCell();
-        gamesPlayedCell.textContent = gamesPlayed;
+        // Add a hidden row for expandable details
+        const detailsRow = tbody.insertRow();
+        detailsRow.classList.add('details-row');
+        detailsRow.style.display = 'none'; // Start hidden
+        const detailsCell = detailsRow.insertCell();
+        detailsCell.colSpan = 3; // Span across columns
+
+        // Populate details row with statistics and game history in table format, side by side
+        detailsCell.innerHTML = `
+            <div class="details-container">
+                <table class="details-table">
+                    <tr><th colspan="2">Statistics</th></tr>
+                    <tr><td>Wins</td><td>${wins}</td></tr>
+                    <tr><td>Draws</td><td>${draws}</td></tr>
+                    <tr><td>Losses</td><td>${losses}</td></tr>
+                    <tr><td>Missing Games</td><td>${missingGames}</td></tr>
+                    <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
+                    <tr><td>Total Points</td><td>${totalPoints}</td></tr>
+                    <tr><td>Winning Percentage</td><td>${winPercentage}%</td></tr>
+                </table>
+                <table class="details-table">
+                    <tr><th colspan="2">Game History</th></tr>
+                    ${dateScores.map((score, i) => `<tr><td>${headers[i + 1]}</td><td>${score}</td></tr>`).join('')}
+                </table>
+            </div>
+        `;
     });
 
     tableContainer.appendChild(table);
 }
+
+// Function to toggle visibility of details row and close any previously opened details
+function toggleDetails(row, mainRow, headers) {
+    const nextRow = mainRow.nextSibling; // The details row is the next row
+    if (openDetailsRow && openDetailsRow !== nextRow) {
+        openDetailsRow.style.display = 'none'; // Close any open details row
+    }
+    nextRow.style.display = nextRow.style.display === 'none' ? 'table-row' : 'none';
+    openDetailsRow = nextRow.style.display === 'none' ? null : nextRow; // Update the open details row
+}
+
+
+	
 
 // Function to load and display data for the specified tab
 async function loadTab(tabName) {
