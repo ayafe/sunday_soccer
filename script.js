@@ -81,24 +81,29 @@ function renderPlayersTable(data) {
         detailsCell.colSpan = 3; // Span across columns
 
         // Populate details row with statistics and game history in table format, side by side
-        detailsCell.innerHTML = `
-            <div class="details-container">
-                <table class="details-table">
-                    <tr><th colspan="2">Statistics</th></tr>
-                    <tr><td>Wins</td><td>${wins}</td></tr>
-                    <tr><td>Draws</td><td>${draws}</td></tr>
-                    <tr><td>Losses</td><td>${losses}</td></tr>
-                    <tr><td>Missing Games</td><td>${missingGames}</td></tr>
-                    <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
-                    <tr><td>Total Points</td><td>${totalPoints}</td></tr>
-                    <tr><td>Winning Percentage</td><td>${winPercentage}%</td></tr>
-                </table>
-                <table class="details-table">
-                    <tr><th colspan="2">Game History</th></tr>
-                    ${dateScores.map((score, i) => `<tr><td>${headers[i + 1]}</td><td>${score}</td></tr>`).join('')}
-                </table>
-            </div>
-        `;
+detailsCell.innerHTML = `
+    <div class="details-container">
+        <table class="details-table">
+            <tr><th colspan="2">Statistics</th></tr>
+            <tr><td>Wins</td><td>${wins}</td></tr>
+            <tr><td>Draws</td><td>${draws}</td></tr>
+            <tr><td>Losses</td><td>${losses}</td></tr>
+            <tr><td>Missing Games</td><td>${missingGames}</td></tr>
+            <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
+            <tr><td>Total Points</td><td>${totalPoints}</td></tr>
+            <tr><td>Winning Percentage</td><td>${winPercentage}%</td></tr>
+        </table>
+        <table class="details-table">
+            <tr><th colspan="2">Game History</th></tr>
+            ${dateScores.slice().reverse().map((score, i) => {
+                // Display each game score in reverse order with the corresponding date
+                const dateHeader = headers[headers.length - i - 1];
+                return `<tr><td>${dateHeader}</td><td>${score}</td></tr>`;
+            }).join('')}
+        </table>
+    </div>
+`;
+
     });
 
     tableContainer.appendChild(table);
