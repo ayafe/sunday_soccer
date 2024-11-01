@@ -16,7 +16,6 @@ async function fetchData(range) {
 
 let openDetailsRow = null; // Variable to track the currently open details row
 
-// Function to render players table with expandable rows for mobile view
 function renderPlayersTable(data) {
     const tableContainer = document.getElementById('table-container');
     tableContainer.innerHTML = ''; // Clear previous content
@@ -25,8 +24,8 @@ function renderPlayersTable(data) {
     const headers = data[0];
     const rows = data.slice(1);
 
-    // Display only essential columns on mobile: Player Name, Games Played, and Total Points
-    const displayedHeaders = ['Player Name', 'Games Played', 'Total Points'];
+    // Display only essential columns on mobile: Player Number, Player Name, Games Played, and Total Points
+    const displayedHeaders = ['#', 'Player Name', 'Games Played', 'Total Points'];
     
     // Create the table
     const table = document.createElement('table');
@@ -42,8 +41,12 @@ function renderPlayersTable(data) {
 
     // Populate rows with expandable content
     const tbody = table.createTBody();
-    rows.forEach(row => {
+    rows.forEach((row, index) => { // Add index for numbering
         const tr = tbody.insertRow();
+
+        // Add player number cell
+        const playerNumberCell = tr.insertCell();
+        playerNumberCell.textContent = index + 1; // Display 1-based index
 
         // Player Name cell with clickable expand/collapse action
         const playerNameCell = tr.insertCell();
@@ -78,36 +81,35 @@ function renderPlayersTable(data) {
         detailsRow.classList.add('details-row');
         detailsRow.style.display = 'none'; // Start hidden
         const detailsCell = detailsRow.insertCell();
-        detailsCell.colSpan = 3; // Span across columns
+        detailsCell.colSpan = 4; // Span across columns, including player number
 
         // Populate details row with statistics and game history in table format, side by side
-detailsCell.innerHTML = `
-    <div class="details-container">
-        <table class="details-table">
-            <tr><th colspan="2">Statistics</th></tr>
-            <tr><td>Wins</td><td>${wins}</td></tr>
-            <tr><td>Draws</td><td>${draws}</td></tr>
-            <tr><td>Losses</td><td>${losses}</td></tr>
-            <tr><td>Missing Games</td><td>${missingGames}</td></tr>
-            <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
-            <tr><td>Total Points</td><td>${totalPoints}</td></tr>
-            <tr><td>Winning Percentage</td><td>${winPercentage}%</td></tr>
-        </table>
-        <table class="details-table">
-            <tr><th colspan="2">Game History</th></tr>
-            ${dateScores.slice().reverse().map((score, i) => {
-                // Display each game score in reverse order with the corresponding date
-                const dateHeader = headers[headers.length - i - 1];
-                return `<tr><td>${dateHeader}</td><td>${score}</td></tr>`;
-            }).join('')}
-        </table>
-    </div>
-`;
-
+        detailsCell.innerHTML = `
+            <div class="details-container">
+                <table class="details-table">
+                    <tr><th colspan="2">Statistics</th></tr>
+                    <tr><td>Wins</td><td>${wins}</td></tr>
+                    <tr><td>Draws</td><td>${draws}</td></tr>
+                    <tr><td>Losses</td><td>${losses}</td></tr>
+                    <tr><td>Missing Games</td><td>${missingGames}</td></tr>
+                    <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
+                    <tr><td>Total Points</td><td>${totalPoints}</td></tr>
+                    <tr><td>Winning Percentage</td><td>${winPercentage}%</td></tr>
+                </table>
+                <table class="details-table">
+                    <tr><th colspan="2">Game History</th></tr>
+                    ${dateScores.slice().reverse().map((score, i) => {
+                        const dateHeader = headers[headers.length - i - 1];
+                        return `<tr><td>${dateHeader}</td><td>${score}</td></tr>`;
+                    }).join('')}
+                </table>
+            </div>
+        `;
     });
 
     tableContainer.appendChild(table);
 }
+
 
 // Function to toggle visibility of details row and close any previously opened details
 function toggleDetails(row, mainRow, headers) {
