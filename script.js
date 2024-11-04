@@ -1,3 +1,4 @@
+
 const sheetId = '1a2Oj5EBg5Nrqhs5Juhzuz_wUS57C2YSJacosXqdFwoc'; // Your Sheet ID
 const apiKey = 'AIzaSyAdm1S0fdcBEbCBVti8Pl1v_Y4GBaBw_mI'; // Replace with your actual API key
 
@@ -22,11 +23,21 @@ function renderPlayersTable(data) {
 
     // Extract headers and data
     const headers = data[0];
-    const rows = data.slice(1);
+    let rows = data.slice(1);
+
+    // Calculate points for each player and sort rows by "Total Points"
+    rows = rows.map((row, index) => {
+        const dateScores = row.slice(1);
+        const totalPoints = dateScores.reduce((sum, score) => score !== '*' ? sum + parseInt(score, 10) : sum, 0);
+        return { row, totalPoints, index }; // Store original row, points, and index
+    });
+
+    // Sort rows by totalPoints in descending order
+    rows.sort((a, b) => b.totalPoints - a.totalPoints);
 
     // Display only essential columns on mobile: Player Number, Player Name, Games Played, and Total Points
     const displayedHeaders = ['#', 'Player Name', 'Games Played', 'Total Points'];
-    
+
     // Create the table
     const table = document.createElement('table');
     table.classList.add('styled-table');
@@ -41,12 +52,12 @@ function renderPlayersTable(data) {
 
     // Populate rows with expandable content
     const tbody = table.createTBody();
-    rows.forEach((row, index) => { // Add index for numbering
+    rows.forEach(({ row, totalPoints }, rank) => { // Use rank for static ranking
         const tr = tbody.insertRow();
 
-        // Add player number cell
+        // Add player number cell with static rank
         const playerNumberCell = tr.insertCell();
-        playerNumberCell.textContent = index + 1; // Display 1-based index
+        playerNumberCell.textContent = rank + 1; // Display static rank from 1 onward
 
         // Player Name cell with clickable expand/collapse action
         const playerNameCell = tr.insertCell();
@@ -59,15 +70,9 @@ function renderPlayersTable(data) {
         };
         playerNameCell.appendChild(playerLink);
 
-        // Calculate statistics for Games Played, Total Points, Wins, Draws, Losses, Missing Games, etc.
+        // Calculate statistics for Games Played
         const dateScores = row.slice(1);
-        const totalPoints = dateScores.reduce((sum, score) => score !== '*' ? sum + parseInt(score, 10) : sum, 0);
         const gamesPlayed = dateScores.filter(score => score !== '*').length;
-        const wins = dateScores.filter(score => score === '3').length;
-        const draws = dateScores.filter(score => score === '1').length;
-        const losses = dateScores.filter(score => score === '0').length;
-        const missingGames = dateScores.filter(score => score === '*').length;
-        const winPercentage = gamesPlayed > 0 ? ((wins / gamesPlayed) * 100).toFixed(2) : 0;
 
         // Add Games Played and Total Points cells
         const gamesPlayedCell = tr.insertCell();
@@ -88,13 +93,13 @@ function renderPlayersTable(data) {
             <div class="details-container">
                 <table class="details-table">
                     <tr><th colspan="2">Statistics</th></tr>
-                    <tr><td>Wins</td><td>${wins}</td></tr>
-                    <tr><td>Draws</td><td>${draws}</td></tr>
-                    <tr><td>Losses</td><td>${losses}</td></tr>
-                    <tr><td>Missing Games</td><td>${missingGames}</td></tr>
+                    <tr><td>Wins</td><td>${dateScores.filter(score => score === '3').length}</td></tr>
+                    <tr><td>Draws</td><td>${dateScores.filter(score => score === '1').length}</td></tr>
+                    <tr><td>Losses</td><td>${dateScores.filter(score => score === '0').length}</td></tr>
+                    <tr><td>Missing Games</td><td>${dateScores.filter(score => score === '*').length}</td></tr>
                     <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
                     <tr><td>Total Points</td><td>${totalPoints}</td></tr>
-                    <tr><td>Winning Percentage</td><td>${winPercentage}%</td></tr>
+                    <tr><td>Winning Percentage</td><td>${gamesPlayed > 0 ? ((dateScores.filter(score => score === '3').length / gamesPlayed) * 100).toFixed(2) : 0}%</td></tr>
                 </table>
                 <table class="details-table">
                     <tr><th colspan="2">Game History</th></tr>
@@ -109,6 +114,7 @@ function renderPlayersTable(data) {
 
     tableContainer.appendChild(table);
 }
+
 
 
 // Function to toggle visibility of details row and close any previously opened details
