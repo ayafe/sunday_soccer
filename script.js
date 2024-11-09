@@ -74,6 +74,33 @@ function renderPlayersTable(data) {
         const dateScores = row.slice(1);
         const gamesPlayed = dateScores.filter(score => score !== '*').length;
 
+        // Calculate Winning/Losing Streak
+        let streak = 0;
+        let currentStreakType = null;
+        for (let i = dateScores.length - 1; i >= 0; i--) {
+            const score = dateScores[i];
+            if (score === '*') continue;
+            if (score === '3') {
+                if (currentStreakType === 'win' || currentStreakType === null) {
+                    streak++;
+                    currentStreakType = 'win';
+                } else break;
+            } else if (score === '0') {
+                if (currentStreakType === 'loss' || currentStreakType === null) {
+                    streak++;
+                    currentStreakType = 'loss';
+                } else break;
+            } else {
+                break; // Streak ends on a draw
+            }
+        }
+        const streakText = currentStreakType === 'win' ? `Winning Streak: ${streak}` :
+                           currentStreakType === 'loss' ? `Losing Streak: ${streak}` : 'No Streak';
+
+        // Calculate Participation Rate
+        const totalGames = headers.length - 1; // Exclude the player name column
+        const participationRate = ((gamesPlayed / totalGames) * 100).toFixed(2) + '%';
+
         // Add Games Played and Total Points cells
         const gamesPlayedCell = tr.insertCell();
         gamesPlayedCell.textContent = gamesPlayed;
@@ -100,6 +127,8 @@ function renderPlayersTable(data) {
                     <tr><td>Total Games Played</td><td>${gamesPlayed}</td></tr>
                     <tr><td>Total Points</td><td>${totalPoints}</td></tr>
                     <tr><td>Winning Percentage</td><td>${gamesPlayed > 0 ? ((dateScores.filter(score => score === '3').length / gamesPlayed) * 100).toFixed(2) : 0}%</td></tr>
+                    <tr><td>Participation Rate</td><td>${participationRate}</td></tr>
+                    <tr><td>Current Streak</td><td>${streakText}</td></tr>
                 </table>
                 <table class="details-table">
                     <tr><th colspan="2">Game History</th></tr>
